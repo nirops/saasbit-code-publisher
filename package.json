@@ -1,6 +1,6 @@
 {
   "name": "@nirops/saasbit-code-publisher",
-  "version": "0.0.2-2",
+  "version": "0.0.2-3",
   "description": "CLI for Saasbit projects",
   "main": "bin/index.js",
   "repository": {
