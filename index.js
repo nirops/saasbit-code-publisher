@@ -2,7 +2,7 @@
 import { program }  from 'commander';
 import { publish } from './commands/publish.js';
 import { getconfig, setconfig, validate } from './commands/config.js';
-import {readline} from 'readline';
+import * as readline from 'readline';
 
 const initializeConfigIfNeeded = async () => {
   const cfg = getconfig();
