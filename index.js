@@ -3,40 +3,38 @@ import { program }  from 'commander';
 import { publish } from './commands/publish.js';
 import { getconfig, setconfig, validate } from './commands/config.js';
 import inquirer from 'inquirer';
-import * as util from 'util';
-const asyncInquirer = util.promisify(inquirer.prompt);
 
-
-const initializeConfigIfNeeded = async () => {
+async function initializeConfigIfNeeded(cb) {
   const cfg = getconfig();
-  if (!cfg.token || !cfg.app) {
-    const answers = await asyncInquirer([
-        {
-          type: 'password',
-          name: 'token',
-          message: 'Enter the API Token:',
-        },
-        {
-          name: 'app',
-          message: 'Enter the App Name:',
-        },
-      ]);
-
+  console.log(cfg);
+  if (!cfg.token || !cfg.apps) {
+    const answers = await inquirer.prompt([
+      {
+        type: 'password',
+        name: 'token',
+        message: 'Enter the API Token (https://saasbit.nirops.com):',
+      },
+      {
+        name: 'app',
+        message: 'Enter the App Name:',
+      },
+    ]);
     console.log(answers);
-
     const ans = setconfig(answers.token, answers.app, '');
-    return ans;
+    console.log(ans);
+    cb();
+  } else {
+    cb();
   }
 }
 program.command('publish-fe')
   .description('Publish UI/Frontend code to Saasbit Cloud')
   .option('-b, --build <BUILD DIRECTORY>', 'Build directory', 'dist')
   .action(async (str, options) => {
-    try{
-      await initializeConfigIfNeeded();
+    initializeConfigIfNeeded(async () => {
       console.log(str.build);
       await publish(str.build);
-    }catch(e) {}
+    });
   });
 
 program.command('publish-be')
@@ -44,9 +42,10 @@ program.command('publish-be')
   .option('-b, --build <BUILD DIRECTORY>', 'Build directory', 'dist')
   .option('-f, --file <BUILD FILE>', 'Build File / Jar file', '')
   .action(async (str, options) => {
-    console.log(str.build);
-    await initializeConfigIfNeeded();
-    await publish(str.build);
+    initializeConfigIfNeeded(async () => {
+      console.log(str.build);
+      await publish(str.build);
+    });
   });
 
 program.command('config')
