@@ -2,21 +2,30 @@
 import { program }  from 'commander';
 import { publish } from './commands/publish.js';
 import { getconfig, setconfig, validate } from './commands/config.js';
-import * as readline from 'readline';
+import inquirer from 'inquirer';
+import * as util from 'util';
+const asyncInquirer = util.promisify(inquirer.prompt);
+
 
 const initializeConfigIfNeeded = async () => {
   const cfg = getconfig();
   if (!cfg.token || !cfg.app) {
-    console.error('Configure API Token and App name');
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
+    const answers = await asyncInquirer([
+        {
+          type: 'password',
+          name: 'token',
+          message: 'Enter the API Token:',
+        },
+        {
+          name: 'app',
+          message: 'Enter the App Name:',
+        },
+      ]);
 
-    const token = await rl.question('Enter the API Token: ');
-    const app = await rl.question('Enter the App Name: ');
+    console.log(answers);
 
-    setconfig(token, app, '');
+    const ans = setconfig(answers.token, answers.app, '');
+    return ans;
   }
 }
 program.command('publish-fe')
