@@ -27,7 +27,7 @@ async function initializeConfigIfNeeded(cb) {
     cb();
   }
 }
-program.command('publish-fe')
+program.command('publish')
   .description('Publish UI/Frontend code to Saasbit Cloud')
   .option('-b, --build <BUILD DIRECTORY>', 'Build directory', 'dist')
   .action(async (str, options) => {
